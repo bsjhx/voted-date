@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT License
 pragma solidity ^0.8.0;
 
-contract OpenDateVote {
+contract StartNewDateVoting {
     mapping(uint256 => DatePoll) private datePolls;
     uint8 private maxOptionsInPolls;
 
@@ -14,6 +14,10 @@ contract OpenDateVote {
 
     constructor(uint8 _maxOptionsInPolls) {
         maxOptionsInPolls = _maxOptionsInPolls;
+    }
+
+    function get() public pure returns (uint) {
+        return 0;        
     }
 
     function addNewPoll(
