@@ -26,7 +26,6 @@ contract StartNewDateVoting {
         address _pollManagerAddress,
         address _addedByAddress,
         uint256[] memory _possibleDates,
-        bool _onlyListedVotersCanVote,
         address[] memory _voterAddresses
     ) public {
         require(_id > 0, "New date poll id must be bigger then 0.");
@@ -45,11 +44,12 @@ contract StartNewDateVoting {
         newDatePoll.pollManagerAddress = _pollManagerAddress;
         newDatePoll.addedByAddress = _addedByAddress;
         newDatePoll.possibleDates = _possibleDates;
-        newDatePoll.onlyListedVotersCanVote = _onlyListedVotersCanVote;
         newDatePoll.voterAddresses = _voterAddresses;
 
         emit PollAdded(msg.sender, _pollManagerAddress, _id, _name);
     }
+
+    fallback() external {}
 
     struct DatePoll {
         uint256 id;
@@ -57,7 +57,6 @@ contract StartNewDateVoting {
         address pollManagerAddress;
         address addedByAddress;
         uint256[] possibleDates;
-        bool onlyListedVotersCanVote;
         address[] voterAddresses;
         mapping(uint256 => SingleVote[]) votes;
     }
