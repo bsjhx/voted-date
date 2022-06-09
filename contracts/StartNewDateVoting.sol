@@ -16,33 +16,28 @@ contract StartNewDateVoting {
         maxOptionsInPolls = _maxOptionsInPolls;
     }
 
-    function get() public pure returns (uint) {
-        return 0;        
-    }
-
     function addNewPoll(
         uint256 _id,
         string memory _name,
         address _pollManagerAddress,
-        address _addedByAddress,
         uint256[] memory _possibleDates,
         address[] memory _voterAddresses
     ) public {
         require(_id > 0, "New date poll id must be bigger then 0.");
         require(
-            datePolls[_id].id > 0,
+            datePolls[_id].id == 0,
             "Date poll with given id already exists."
         );
         require(
             _possibleDates.length <= maxOptionsInPolls,
-            "Number of possible dates should be lower then limit"
+            "Number of possible dates should be lower then limit."
         );
 
         DatePoll storage newDatePoll = datePolls[_id];
         newDatePoll.id = _id;
         newDatePoll.name = _name;
         newDatePoll.pollManagerAddress = _pollManagerAddress;
-        newDatePoll.addedByAddress = _addedByAddress;
+        newDatePoll.addedByAddress = msg.sender;
         newDatePoll.possibleDates = _possibleDates;
         newDatePoll.voterAddresses = _voterAddresses;
 
