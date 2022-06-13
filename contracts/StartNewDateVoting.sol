@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT License
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract StartNewDateVoting {
     mapping(uint256 => DatePoll) private datePolls;
     uint8 private maxOptionsInPolls;
@@ -40,7 +42,7 @@ contract StartNewDateVoting {
     }
 
     function getPollDataForVoter(uint256 _id) public view returns (string memory, uint256[] memory) {
-        require(!datePolls[_id].exists, "Date poll with given id does not exists");
+        require(datePolls[_id].exists, "Date poll with given id does not exists");
         DatePoll storage datePoll = datePolls[_id];
         return (datePoll.name, datePoll.possibleDates);
     }

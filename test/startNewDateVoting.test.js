@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+const { BigNumber } = require("ethers");
 
 describe("StartNewDateVoting adding new poll", function () {
     it("When new date poll is added, event is emitted", async function () {
@@ -17,14 +18,14 @@ describe("StartNewDateVoting adding new poll", function () {
     it("Adding two polls with same id should be not possible", async function () {
         const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
         const startNewDateVoting = await StartNewDateVoting.deploy(10);
-        const [owner, manager] = await ethers.getSigners();
+        const [_, manager] = await ethers.getSigners();
 
         await startNewDateVoting.addNewPoll(
             123,
             "Test date poll",
             manager.address,
             [1000, 10005]
-        )
+        );
 
         await expect(startNewDateVoting.addNewPoll(
             123,
@@ -37,7 +38,7 @@ describe("StartNewDateVoting adding new poll", function () {
     it("Number of possible dates should be lower then limit", async function () {
         const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
         const startNewDateVoting = await StartNewDateVoting.deploy(1);
-        const [owner, manager] = await ethers.getSigners();
+        const [_, manager] = await ethers.getSigners();
 
         await expect(startNewDateVoting.addNewPoll(
             123,
@@ -48,11 +49,32 @@ describe("StartNewDateVoting adding new poll", function () {
     });
 });
 
-// describe("Voting and reading base poll data for voter", function() {
-//     it("Voter can see ", function() {
+describe("Voting and reading base poll data for voter", function() {
+    it("Voter can see only base poll data", async function() {
+        const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
+        const startNewDateVoting = await StartNewDateVoting.deploy(10);
+        const [_, manager] = await ethers.getSigners();
 
-//     });
-// });
+        await startNewDateVoting.addNewPoll(
+            123,
+            "Test date poll",
+            manager.address,
+            [1000]
+        );
+
+        const poll = await startNewDateVoting.getPollDataForVoter(123);
+        expect(poll[0]).to.be.equal("Test date poll");
+        expect(poll[1]).deep.to.be.equal([BigNumber.from("1000")]);
+    });
+
+    it("If poll does not exist, transaction will be reverted", async function() {
+        const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
+        const startNewDateVoting = await StartNewDateVoting.deploy(10);
+        const [_, manager] = await ethers.getSigners();
+
+        await expect(startNewDateVoting.getPollDataForVoter(123)).to.be.revertedWith("Date poll with given id does not exists");
+    });
+});
 
 describe("StartNewDateVoting payments", function () {
     it("Contract should not receive ether", async function () {
