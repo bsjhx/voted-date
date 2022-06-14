@@ -52,14 +52,13 @@ contract StartNewDateVoting {
         return (datePoll.name, datePoll.possibleDates);
     }
 
-    function vote(uint256 _id, uint256 _dateToVote, uint256 _timestamp) public returns (uint) {
+    function vote(uint256 _id, uint256 _dateToVote, uint256 _timestamp) public {
         require(datePolls[_id].exists, "Date poll with given id does not exists");
         DatePoll storage datePoll = datePolls[_id];
         SingleVote memory newVote = SingleVote(msg.sender, _timestamp);
         datePoll.votes[_dateToVote].push(newVote);
 
         emit Voted(msg.sender, _dateToVote);
-        return 1;
     }
 
     fallback() external {}
