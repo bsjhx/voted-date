@@ -49,8 +49,8 @@ describe("StartNewDateVoting adding new poll", function () {
     });
 });
 
-describe("Voting and reading base poll data for voter", function() {
-    it("Voter can see only base poll data", async function() {
+describe("Reading base poll data for voter", function () {
+    it("User can see only base poll data", async function () {
         const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
         const startNewDateVoting = await StartNewDateVoting.deploy(10);
         const [_, manager] = await ethers.getSigners();
@@ -67,12 +67,30 @@ describe("Voting and reading base poll data for voter", function() {
         expect(poll[1]).deep.to.be.equal([BigNumber.from("1000")]);
     });
 
-    it("If poll does not exist, transaction will be reverted", async function() {
+    it("If poll does not exist, transaction will be reverted", async function () {
         const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
         const startNewDateVoting = await StartNewDateVoting.deploy(10);
-        const [_, manager] = await ethers.getSigners();
 
         await expect(startNewDateVoting.getPollDataForVoter(123)).to.be.revertedWith("Date poll with given id does not exists");
+    });
+});
+
+describe("Voting", function () {
+    it("User can vote for existing option", async function () {
+        const StartNewDateVoting = await ethers.getContractFactory("StartNewDateVoting");
+        const startNewDateVoting = await StartNewDateVoting.deploy(10);
+        const [_, manager, thirdAccount] = await ethers.getSigners();
+
+        await startNewDateVoting.addNewPoll(
+            123,
+            "Test date poll",
+            manager.address,
+            [1000, 1005, 1010]
+        );
+
+        await expect(startNewDateVoting.connect(thirdAccount).vote(123, 1000, 1000)).to
+            .emit(startNewDateVoting, "Voted")
+            .withArgs(thirdAccount.address, 1000);
     });
 });
 

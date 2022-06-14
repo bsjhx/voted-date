@@ -4,14 +4,19 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract StartNewDateVoting {
-    mapping(uint256 => DatePoll) private datePolls;
+    mapping(uint256 => DatePoll) public datePolls;
     uint8 private maxOptionsInPolls;
 
     event PollAdded(
-        address _from,
-        address indexed _pollManager,
+        address _addedByAddress,
+        address indexed _pollManagerAddress,
         uint256 _id,
         string _name
+    );
+
+    event Voted(
+        address _voterAddress,
+        uint256 _vottedDate
     );
 
     constructor(uint8 _maxOptionsInPolls) {
@@ -45,6 +50,16 @@ contract StartNewDateVoting {
         require(datePolls[_id].exists, "Date poll with given id does not exists");
         DatePoll storage datePoll = datePolls[_id];
         return (datePoll.name, datePoll.possibleDates);
+    }
+
+    function vote(uint256 _id, uint256 _dateToVote, uint256 _timestamp) public returns (uint) {
+        require(datePolls[_id].exists, "Date poll with given id does not exists");
+        DatePoll storage datePoll = datePolls[_id];
+        SingleVote memory newVote = SingleVote(msg.sender, _timestamp);
+        datePoll.votes[_dateToVote].push(newVote);
+
+        emit Voted(msg.sender, _dateToVote);
+        return 1;
     }
 
     fallback() external {}
