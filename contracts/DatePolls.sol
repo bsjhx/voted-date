@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-contract StartNewDateVoting {
-    mapping(uint256 => DatePoll) public datePolls;
-    uint8 private maxOptionsInPolls;
+contract DatePolls {
+    mapping(uint256 => DatePoll) public idsToDatePolls;
+    uint8 maxOptionsInPolls;
 
     event PollAdded(
         address _addedByAddress,
@@ -29,13 +29,15 @@ contract StartNewDateVoting {
         address _pollManagerAddress,
         uint256[] memory _possibleDates
     ) public {
-        require(!datePolls[_id].exists, "Date poll with given id already exists.");
+        require(!idsToDatePolls[_id].exists, "Date poll with given id already exists");
+
         require(
             _possibleDates.length <= maxOptionsInPolls,
             "Number of possible dates should be lower then limit."
         );
 
-        DatePoll storage newDatePoll = datePolls[_id];
+        DatePoll storage newDatePoll = idsToDatePolls[_id];
+
         newDatePoll.id = _id;
         newDatePoll.name = _name;
         newDatePoll.pollManagerAddress = _pollManagerAddress;
@@ -47,14 +49,18 @@ contract StartNewDateVoting {
     }
 
     function getPollDataForVoter(uint256 _id) public view returns (string memory, uint256[] memory) {
-        require(datePolls[_id].exists, "Date poll with given id does not exists");
-        DatePoll storage datePoll = datePolls[_id];
+        require(idsToDatePolls[_id].exists, "Date poll with given id does not exist");
+
+        DatePoll storage datePoll = idsToDatePolls[_id];
+
         return (datePoll.name, datePoll.possibleDates);
     }
 
     function vote(uint256 _id, uint256 _dateToVote, uint256 _timestamp) public {
-        require(datePolls[_id].exists, "Date poll with given id does not exists");
-        DatePoll storage datePoll = datePolls[_id];
+        require(idsToDatePolls[_id].exists, "Date poll with given id does not exist");
+
+        DatePoll storage datePoll = idsToDatePolls[_id];
+
         SingleVote memory newVote = SingleVote(msg.sender, _timestamp);
         datePoll.votes[_dateToVote].push(newVote);
 
