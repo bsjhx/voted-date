@@ -1,0 +1,9 @@
+todo:
+Owner contract (plus tests and extended code in contract) #blockchain
+User should see all polls that he started #front
+User should be able to start new poll #front
+
+in_progress:
+Upgradable contract #blockchain
+
+done:

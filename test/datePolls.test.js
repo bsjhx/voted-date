@@ -6,7 +6,8 @@ describe("Contract: DatePolls", () => {
     describe("Adding new poll", () => {
         it("When new date poll is added, event is emitted", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
+
             const [owner, manager] = await ethers.getSigners();
 
             await expect(datePolls.addNewPoll(
@@ -19,7 +20,7 @@ describe("Contract: DatePolls", () => {
 
         it("Adding two polls with same id should be not possible", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
             const [_, manager] = await ethers.getSigners();
 
             await datePolls.addNewPoll(
@@ -39,7 +40,7 @@ describe("Contract: DatePolls", () => {
 
         it("Number of possible dates should be lower then limit", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(1);
+            const datePolls = await upgrades.deployProxy(DatePolls, [1]);
             const [_, manager] = await ethers.getSigners();
 
             await expect(datePolls.addNewPoll(
@@ -54,7 +55,7 @@ describe("Contract: DatePolls", () => {
     describe("Reading base poll data for voter", function () {
         it("User can see only base poll data", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
             const [_, manager] = await ethers.getSigners();
 
             await datePolls.addNewPoll(
@@ -71,7 +72,7 @@ describe("Contract: DatePolls", () => {
 
         it("If poll does not exist, transaction will be reverted", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
 
             await expect(datePolls.getPollDataForVoter(123)).to.be.revertedWith("Date poll with given id does not exist");
         });
@@ -80,7 +81,7 @@ describe("Contract: DatePolls", () => {
     describe("Voting", function () {
         it("User can vote for existing option", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
             const [_, manager, three] = await ethers.getSigners();
 
             await datePolls.addNewPoll(
@@ -99,7 +100,7 @@ describe("Contract: DatePolls", () => {
     describe("Payments", function () {
         it("Contract should not receive ether", async function () {
             const DatePolls = await ethers.getContractFactory("DatePolls");
-            const datePolls = await DatePolls.deploy(10);
+            const datePolls = await upgrades.deployProxy(DatePolls, [10]);
             await datePolls.deployed();
 
             const [owner] = await ethers.getSigners();

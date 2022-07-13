@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT License
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.24 <0.9.0;
 
 import "hardhat/console.sol";
+import "@openzeppelin/upgrades-core/contracts/Initializable.sol";
 
-contract DatePolls {
+contract DatePolls is Initializable {
     mapping(uint256 => DatePoll) public idsToDatePolls;
     uint8 maxOptionsInPolls;
 
@@ -31,7 +32,7 @@ contract DatePolls {
         uint256 voteTimestamp;
     }
 
-    constructor(uint8 _maxOptionsInPolls) {
+    function initialize(uint8 _maxOptionsInPolls) public initializer {
         maxOptionsInPolls = _maxOptionsInPolls;
     }
 
